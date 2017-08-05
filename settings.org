@@ -1,0 +1,149 @@
+* General
+  #+BEGIN_SRC emacs-lisp
+    ;; No welcome messages
+    (setq inhibit-startup-message t)
+    (setq inhibit-startup-screen t
+	  initial-scratch-messgae ""
+	  initial-major-mode 'text-mode)
+
+    ;; No sounds
+    (setq echo-keystrokes 0.1
+	  use-dialog-box nil
+	  visible-bell t)
+
+    ;; No more backup files
+    (setq backup-by-copying t
+	  make-backup-files nil
+	  create-lockfiles nil)
+
+    ;; Stop creating #autosave# files
+    (setq auto-save-default nil)
+
+    ;; Unicode
+    (setq locale-coding-system 'utf-8)
+    (set-terminal-coding-system 'utf-8)
+    (set-keyboard-coding-system 'utf-8)
+    (set-selection-coding-system 'utf-8)
+    (prefer-coding-system 'utf-8)
+    (set-language-environment "UTF-8")
+    (setq current-language-environment "UTF-8")
+
+    ;; Turn on parent match highlighting
+    (show-paren-mode t)
+
+    ;; Window interface
+    (tool-bar-mode -1)
+    (scroll-bar-mode -1)
+    (menu-bar-mode -1)
+    (global-visual-line-mode)
+
+    ;; Warn when opening files bigger than 100MB
+    (setq large-file-warning-threshold 100000000)
+
+    ;; Frame title
+    (setq frame-title-format
+	  '("" (:eval (if (buffer-file-name)
+			  (abbreviate-file-name (buffer-file-name)) "%b"))
+	    " ★ " invocation-name))
+
+    ;; Keybindings
+    (global-set-key (kbd "C-;") 'comment-or-uncomment-region)
+    (global-set-key (kbd "M-/") 'hippie-expand)
+    (global-set-key [C-wheel-up]   'text-scale-increase)
+    (global-set-key [C-wheel-down] 'text-scale-decrease)
+    (global-set-key (kbd "C-+")    'text-scale-increase)
+    (global-set-key (kbd "C--")    'text-scale-decrease)
+    (global-set-key (kbd "C->")   'next-buffer)
+    (global-set-key (kbd "C-<")   'previous-buffer)
+    (global-set-key (kbd "<f12>") 'menu-bar-mode)
+    (global-set-key (kbd "C-z") 'undo)
+  #+END_SRC
+* Packages / Plugins
+  #+BEGIN_SRC emacs-lisp
+    (use-package dashboard
+      :ensure t
+      :config
+      (dashboard-setup-startup-hook)
+      (setq dashboard-banner-logo-title "")
+      (setq dashboard-startup-banner 'logo))
+
+    (use-package ace-jump-mode
+      :ensure t
+      :bind ("C-c SPC" . ace-jump-mode))
+
+    (use-package counsel
+      :ensure t)
+
+    (use-package swiper
+      :ensure t
+      :bind (("C-s" . swiper)
+             ("C-r" . swiper)
+             ("C-c C-r" . ivy-resume)
+             ("M-x" . counsel-M-x)
+             ("C-x C-f" . counsel-find-file)))
+
+    (use-package telephone-line
+      :ensure t)
+
+    (use-package org-bullets
+      :ensure t
+      :init
+      (add-hook 'org-mode-hook #'org-bullets-mode))
+
+    (use-package leuven-theme
+      :ensure t
+      :config
+      (load-theme 'leuven t))
+
+    (use-package undo-tree
+      :ensure t
+      :diminish undo-tree-mode
+      :config (global-undo-tree-mode))
+
+    (use-package magit
+      :ensure t
+      :commands magit-status magit-blame
+      :init (setq
+             magit-revert-buffers nil))
+
+    (use-package company
+      :ensure t
+      :diminish company-mode
+      :commands company-mode
+      :init
+      (setq
+       company-dabbrev-ignore-case nil
+       company-dabbrev-code-ignore-case nil
+       company-dabbrev-downcase nil
+       company-idle-delay 0
+       company-minimum-prefix-length 4)
+      :config
+      ;; disables TAB in company-mode, freeing it for yasnippet
+      (define-key company-active-map [tab] nil)
+      (define-key company-active-map (kbd "TAB") nil))
+
+    (use-package smartparens
+      :ensure t
+      :diminish smartparens-mode
+      :commands
+      smartparens-strict-mode
+      smartparens-mode
+      sp-restrict-to-pairs-interactive
+      sp-local-pair
+      :init
+      (setq sp-interactive-dwim t)
+      :config
+      (require 'smartparens-config)
+      (sp-use-smartparens-bindings)
+
+      (sp-pair "(" ")" :wrap "C-(") ;; how do people live without this?
+      (sp-pair "[" "]" :wrap "s-[") ;; C-[ sends ESC
+      (sp-pair "{" "}" :wrap "C-{")
+
+      ;; WORKAROUND https://github.com/Fuco1/smartparens/issues/543
+      (bind-key "C-<left>" nil smartparens-mode-map)
+      (bind-key "C-<right>" nil smartparens-mode-map)
+
+      (bind-key "s-<delete>" 'sp-kill-sexp smartparens-mode-map)
+      (bind-key "s-<backspace>" 'sp-backward-kill-sexp smartparens-mode-map))
+  #+END_SRC
