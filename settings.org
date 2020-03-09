@@ -90,11 +90,6 @@
       :init
       (add-hook 'org-mode-hook #'org-bullets-mode))
 
-    (use-package leuven-theme
-      :ensure t
-      :config
-      (load-theme 'leuven t))
-
     (use-package undo-tree
       :ensure t
       :diminish undo-tree-mode
@@ -146,4 +141,12 @@
 
       (bind-key "s-<delete>" 'sp-kill-sexp smartparens-mode-map)
       (bind-key "s-<backspace>" 'sp-backward-kill-sexp smartparens-mode-map))
+    
+    (use-package doom-themes
+      :ensure t
+      :config
+      (setq doom-themes-enable-bold t
+            doom-themes-enable-italic t)
+      (load-theme 'doom-one t)
+      (doom-themes-org-config))
   #+END_SRC
